@@ -8,9 +8,12 @@ const mockUsers = [
     { id: 1, username: "rrid", displayName: "rishan" },
     { id: 2, username: "soyaib", displayName: "zihad" },
     { id: 3, username: "amar valo lage na", displayName: "ha ha" },
+    { id: 4, username: "amar olpo valo lage na", displayName: "ha ha" },
+    { id: 5, username: "amar besi valo lage na", displayName: "ha ha" },
+    { id: 6, username: "amar valoi lage na", displayName: "ha ha" },
 ]
 
-// ---make get request- (route, handler)
+// ---------make get request---------(route, handler)
 // home router
 app.get("/", (req, res) => [
     res.status(201).send({
@@ -35,15 +38,23 @@ app.get("/api/users/:id", (req, res) => {
         })
     }
 
-    const findUser = mockUsers.find((i) => {i.id === parsedId})
+    const findUser = mockUsers.find((i) => i.id === parsedId)
     if (!findUser) {
         return res.sendStatus(404)
     }
     return res.send(findUser)
 })
 
+// query params- key value pair with ? at the end of the parameter. Uses for filtering, sorting, searching
+app.get("/api/users", (req, res) => {
+    console.log(req.query);
+    const { query: { filter, value } } = req;
 
-
+    if (filter && value) {
+        return res.send(mockUsers.filter((i) => i[filter].includes(value)));
+    }
+    return res.send(mockUsers);
+});
 
 // run the server
 app.listen(PORT, () => {
