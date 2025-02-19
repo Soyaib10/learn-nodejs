@@ -15,19 +15,29 @@ const mockUsers = [
 
 // ---------make get request---------(route, handler)
 // home router
-app.get("/", (req, res) => [
+app.get("/", (req, res) => {
     res.status(201).send({
-        msg: "this is home page"
+        msg: "This is home page"
     })
-])
-
-// all users router
-app.get("/api/users", (req, res) => {
-    res.send(mockUsers)
 })
 
-// route params- get by id or something specific
-// single user router
+// all users router
+// app.get("/api/users", (req, res) => {
+//     res.send(mockUsers)
+// })
+
+// query params- key value pair with ? at the end of the parameter. Uses for filtering, sorting, searching
+app.get("/api/users", (req, res) => {
+    console.log(req.query);
+    const { query: { filter, value } } = req;
+
+    if (filter && value) {
+        return res.send(mockUsers.filter((i) => i[filter].includes(value)));
+    }
+    return res.send(mockUsers);
+});
+
+// route params- get by id or something specific. router for specific user
 app.get("/api/users/:id", (req, res) => {
     console.log(req.params)
 
@@ -44,17 +54,6 @@ app.get("/api/users/:id", (req, res) => {
     }
     return res.send(findUser)
 })
-
-// query params- key value pair with ? at the end of the parameter. Uses for filtering, sorting, searching
-app.get("/api/users", (req, res) => {
-    console.log(req.query);
-    const { query: { filter, value } } = req;
-
-    if (filter && value) {
-        return res.send(mockUsers.filter((i) => i[filter].includes(value)));
-    }
-    return res.send(mockUsers);
-});
 
 // run the server
 app.listen(PORT, () => {
