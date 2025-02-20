@@ -18,7 +18,7 @@ const mockUsers = [
 
 // -------------Delete------------------
 app.delete("/api/users/:id", (req, res) => {
-    const {id} = req.params
+    const { id } = req.params
 
     const parsedId = parseInt(id)
     if (isNaN(parsedId)) return res.sendStatus(400)
@@ -31,29 +31,29 @@ app.delete("/api/users/:id", (req, res) => {
 
 // -------------Patch------------------
 app.patch("/api/users/:id", (req, res) => {
-    const {body} = req
-    const {id} = req.params
+    const { body } = req
+    const { id } = req.params
 
     const parsedId = parseInt(id)
     if (isNaN(parsedId)) return res.sendStatus(400)
 
     const findUserIndex = mockUsers.findIndex(i => i.id === parsedId)
     if (findUserIndex === -1) return res.sendStatus(404)
-    mockUsers[findUserIndex] ={...mockUsers[findUserIndex], ...body}
+    mockUsers[findUserIndex] = { ...mockUsers[findUserIndex], ...body }
     if (Object.keys(body).length === 0) return res.status(400).send({ msg: "No data to update" });
     return res.sendStatus(200)
 })
 
 // --------------PUT------------------
 app.put("/api/users/:id", (req, res) => {
-    const {body, params: {id}} = req
+    const { body, params: { id } } = req
 
     const parsedId = parseInt(id)
     if (isNaN(parsedId)) return res.sendStatus(400)
-    
+
     const findUserIndex = mockUsers.findIndex(i => i.id === parsedId)
     if (findUserIndex === -1) return res.sendStatus(404)
-    mockUsers[findUserIndex] = {id: parsedId, ...body}
+    mockUsers[findUserIndex] = { id: parsedId, ...body }
     return res.sendStatus(200)
 })
 
@@ -78,34 +78,15 @@ app.get("/", (req, res) => {
     })
 })
 
-// all users router
-app.get("/api/users", (req, res) => {
-    res.send(mockUsers)
-})
-
 // query params- key value pair with ? at the end of the parameter. Uses for filtering, sorting, searching
 app.get("/api/users", (req, res) => {
-    /*initial
+    //initial
     console.log(req.query);
     const { query: { filter, value } } = req;
     if (filter && value) {
-        return res.send(mockUsers.filter((i) => i[filter].includes(value)));
+        return res.send(mockUsers.filter(i => i[filter] && i[filter].toLowerCase().includes(value.toLowerCase())));
     }
-    return res.send(mockUsers);
-    */
-
-    // self updated
-    const { filter, value, exact } = req.query
-    if (filter && value) {
-        let filteredUsers
-        if (exact === "true") { 
-            filteredUsers = mockUsers.filter(i => i[filter].toLowerCase() === value.toLocaleLowerCase())  // exact filtering
-        } else {
-            filteredUsers = mockUsers.filter(i => i[filter].toLowerCase().includes(value.toLowerCase())) // partial filtering
-        }
-        return res.send(filteredUsers)
-    }
-    return res.send(mockUsers)
+    return res.send(mockUsers) // if nothing matches then get all users
 });
 
 // route params- get by id or something specific. router for specific user
