@@ -16,6 +16,18 @@ const mockUsers = [
     { id: 6, username: "amar valoi lage na", displayName: "ha ha" },
 ]
 
+// -------------Delete------------------
+app.delete("/api/users/:id", (req, res) => {
+    const {id} = req.params
+
+    const parsedId = parseInt(id)
+    if (isNaN(parsedId)) return res.sendStatus(400)
+
+    const findUserIndex = mockUsers.findIndex(i => i.id === parsedId)
+    if (findUserIndex === -1) return res.sendStatus(404)
+    mockUsers.splice(findUserIndex, 1)
+    return res.sendStatus(204)
+})
 
 // -------------Patch------------------
 app.patch("/api/users/:id", (req, res) => {
