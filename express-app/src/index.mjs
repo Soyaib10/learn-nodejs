@@ -70,6 +70,20 @@ app.post("/api/users", (req, res) => {
     return res.status(201).send(newUser)
 })
 
+// -------------pagination-------------
+app.get("/api/users", (req, res) => {
+    const { page = 1, limit = 1 } = req.query;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit); 
+
+    // suppose content no = 6, limit no = 2, so for 2nd page start number should be = 3 
+    const startIndex = (pageNumber - 1) * limitNumber;
+    const paginatedUsers = mockUsers.slice(startIndex, startIndex + limitNumber);
+    return res.send(paginatedUsers);
+});
+
+
 // -------------Get------------------
 // home router
 app.get("/", (req, res) => {
