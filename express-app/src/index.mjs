@@ -16,10 +16,25 @@ const mockUsers = [
     { id: 6, username: "amar valoi lage na", displayName: "ha ha" },
 ]
 
-// ---------make get request---------(route, handler)
+
+// -------------Patch------------------
+app.patch("/api/users/:id", (req, res) => {
+    const {body} = req
+    const {id} = req.params
+
+    const parsedId = parseInt(id)
+    if (isNaN(parsedId)) return res.sendStatus(400)
+
+    const findUserIndex = mockUsers.findIndex(i => i.id === parsedId)
+    if (findUserIndex === -1) return res.sendStatus(404)
+    mockUsers[findUserIndex] ={...mockUsers[findUserIndex], ...body}
+    if (Object.keys(body).length === 0) return res.status(400).send({ msg: "No data to update" });
+    return res.sendStatus(200)
+})
+
 // --------------PUT------------------
 app.put("/api/users/:id", (req, res) => {
-    const {body, params: {id}} = req;
+    const {body, params: {id}} = req
 
     const parsedId = parseInt(id)
     if (isNaN(parsedId)) return res.sendStatus(400)
@@ -43,6 +58,7 @@ app.post("/api/users", (req, res) => {
     return res.status(201).send(newUser)
 })
 
+// -------------Get------------------
 // home router
 app.get("/", (req, res) => {
     res.status(201).send({
@@ -51,20 +67,20 @@ app.get("/", (req, res) => {
 })
 
 // all users router
-// app.get("/api/users", (req, res) => {
-//     res.send(mockUsers)
-// })
+app.get("/api/users", (req, res) => {
+    res.send(mockUsers)
+})
 
 // query params- key value pair with ? at the end of the parameter. Uses for filtering, sorting, searching
 app.get("/api/users", (req, res) => {
-    // initial
-    // console.log(req.query);
-    // const { query: { filter, value } } = req;
-
-    // if (filter && value) {
-    //     return res.send(mockUsers.filter((i) => i[filter].includes(value)));
-    // }
-    // return res.send(mockUsers);
+    /*initial
+    console.log(req.query);
+    const { query: { filter, value } } = req;
+    if (filter && value) {
+        return res.send(mockUsers.filter((i) => i[filter].includes(value)));
+    }
+    return res.send(mockUsers);
+    */
 
     // self updated
     const { filter, value, exact } = req.query
