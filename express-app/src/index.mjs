@@ -17,6 +17,32 @@ const mockUsers = [
 ]
 
 // ---------make get request---------(route, handler)
+// --------------PUT------------------
+app.put("/api/users/:id", (req, res) => {
+    const {body, params: {id}} = req;
+
+    const parsedId = parseInt(id)
+    if (isNaN(parsedId)) return res.sendStatus(400)
+    
+    const findUserIndex = mockUsers.findIndex(i => i.id === parsedId)
+    if (findUserIndex === -1) return res.sendStatus(404)
+    mockUsers[findUserIndex] = {id: parsedId, ...body}
+    return res.sendStatus(200)
+})
+
+//------------POST-----------------
+// basic requrirements- 1. get the body, 2. 
+app.post("/api/users", (req, res) => {
+    console.log(req.body)
+    const { body } = req
+    const newUser = {
+        id: mockUsers.length + 1,
+        ...body
+    }
+    mockUsers.push(newUser)
+    return res.status(201).send(newUser)
+})
+
 // home router
 app.get("/", (req, res) => {
     res.status(201).send({
@@ -44,10 +70,10 @@ app.get("/api/users", (req, res) => {
     const { filter, value, exact } = req.query
     if (filter && value) {
         let filteredUsers
-        if (exact === "true") {
-            filteredUsers = mockUsers.filter(i => i[filter].toLowerCase() === value.toLocaleLowerCase())
+        if (exact === "true") { 
+            filteredUsers = mockUsers.filter(i => i[filter].toLowerCase() === value.toLocaleLowerCase())  // exact filtering
         } else {
-            filteredUsers = mockUsers.filter(i => i[filter].toLowerCase().includes(value.toLowerCase()))
+            filteredUsers = mockUsers.filter(i => i[filter].toLowerCase().includes(value.toLowerCase())) // partial filtering
         }
         return res.send(filteredUsers)
     }
@@ -70,19 +96,6 @@ app.get("/api/users/:id", (req, res) => {
         return res.sendStatus(404)
     }
     return res.send(findUser)
-})
-
-//------------POST-----------------
-// basic requrirements- 1. get the body, 2. 
-app.post("/api/users", (req, res) => {
-    console.log(req.body)
-    const { body } = req
-    const newUser = {
-        id: mockUsers.length + 1,
-        ...body
-    }
-    mockUsers.push(newUser)
-    return res.status(201).send(newUser)
 })
 
 // run the server
