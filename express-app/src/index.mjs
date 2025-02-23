@@ -1,6 +1,7 @@
 // imports
 import express from "express"
 import { query, validationResult, body, matchedData } from "express-validator"
+import { createUserValidationSchema } from "./utils/validationSchemas.mjs";
 
 // constant values
 const app = express()
@@ -62,17 +63,7 @@ app.put("/api/users/:id", resolveIndexByUserId, (req, res) => {
 
 //------------POST-----------------
 // basic requrirements- 1. get the body, 2. 
-app.post("/api/users",
-    [
-        body("username")
-            .notEmpty().withMessage("username can not be empty")
-            .isLength({ min: 5 }).withMessage("username must be at least 5 characters long")
-            .isString().withMessage("username must be a string"),
-
-        body("displayName")
-            .notEmpty().withMessage("displayName can not be empty")
-    ],
-    (req, res) => {
+app.post("/api/users", createUserValidationSchema, (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
