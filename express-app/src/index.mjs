@@ -1,6 +1,6 @@
 // imports
 import express from "express"
-import { query, validationResult } from "express-validator"
+import { query, validationResult, body, matchedData } from "express-validator"
 
 // constant values
 const app = express()
@@ -62,15 +62,34 @@ app.put("/api/users/:id", resolveIndexByUserId, (req, res) => {
 
 //------------POST-----------------
 // basic requrirements- 1. get the body, 2. 
-app.post("/api/users", (req, res) => {
-    const { body } = req
-    const newUser = {
-        id: mockUsers.length + 1,
-        ...body
+app.post("/api/users",
+    [
+        body("username")
+            .notEmpty().withMessage("username can not be empty")
+            .isLength({ min: 5 }).withMessage("username must be at least 5 characters long")
+            .isString().withMessage("username must be a string"),
+
+        body("displayName")
+            .notEmpty().withMessage("displayName can not be empty")
+    ],
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array()
+            });
+        }
+
+        const data = matchedData(req)
+        const newUser = {
+            id: mockUsers.length + 1,
+            ...data
+        };
+        mockUsers.push(newUser);
+        return res.status(201).send(newUser);
     }
-    mockUsers.push(newUser)
-    return res.status(201).send(newUser)
-})
+);
+
 
 // -------------pagination-------------
 // app.get("/api/users", (req, res) => {
