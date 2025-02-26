@@ -102,5 +102,4 @@ router.put("/api/users/:id", resolveIndexByUserId, (req, res) => {
     return res.sendStatus(200)
 })
 
-
 export default router
